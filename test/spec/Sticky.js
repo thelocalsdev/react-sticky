@@ -64,7 +64,6 @@ describe('Valid Sticky', () => {
     it('should change have an expected start state', () => {
       expect(sticky.state).to.eql({
         isSticky: false,
-        wasSticky: false,
         style: {}
       });
     });
@@ -73,7 +72,6 @@ describe('Valid Sticky', () => {
       sticky.handleContainerEvent({ distanceFromTop: 0, distanceFromBottom: 1000, eventSource: document.body });
       expect(sticky.state).to.eql({
         isSticky: true,
-        wasSticky: false,
         style: expectedStickyStyle,
         distanceFromTop: 0,
         distanceFromBottom: 900,
@@ -86,7 +84,6 @@ describe('Valid Sticky', () => {
       sticky.handleContainerEvent({ distanceFromTop: -1, distanceFromBottom: 999, eventSource: document.body });
       expect(sticky.state).to.eql({
         isSticky: true,
-        wasSticky: false,
         style: expectedStickyStyle,
         distanceFromTop: -1,
         distanceFromBottom: 899,
@@ -100,7 +97,6 @@ describe('Valid Sticky', () => {
       sticky.handleContainerEvent({ distanceFromTop: -2, distanceFromBottom: 998, eventSource: document.body });
       expect(sticky.state).to.eql({
         isSticky: true,
-        wasSticky: true,
         style: expectedStickyStyle,
         distanceFromTop: -2,
         distanceFromBottom: 898,
@@ -114,7 +110,6 @@ describe('Valid Sticky', () => {
       sticky.handleContainerEvent({ distanceFromTop: 1, distanceFromBottom: 1001, eventSource: document.body });
       expect(sticky.state).to.eql({
         isSticky: false,
-        wasSticky: true,
         style: { transform: 'translateZ(0)' },
         distanceFromTop: 1,
         distanceFromBottom: 901,
@@ -127,7 +122,6 @@ describe('Valid Sticky', () => {
       sticky.handleContainerEvent({ distanceFromTop: -901, distanceFromBottom: 99, eventSource: document.body });
       expect(sticky.state).to.eql({
         isSticky: true,
-        wasSticky: false,
         style: { ...expectedStickyStyle, top: -1 },
         distanceFromTop: -901,
         distanceFromBottom: -1,
@@ -162,71 +156,6 @@ describe('Valid Sticky', () => {
       expect(sticky.state.isSticky).to.be.false;
       sticky.handleContainerEvent({ distanceFromTop: 1, distanceFromBottom: 98, eventSource: document.body });
       expect(sticky.state.isSticky).to.be.true;
-    });
-  });
-
-  describe('when relative = true', () => {
-
-    let eventSource, sticky;
-    beforeEach(() => {
-      const wrapper = mount(componentFactory({
-        relative: true,
-        children: () => <div />
-      }), { attachTo });
-
-      eventSource = wrapper.node.node;
-      eventSource.scrollHeight = 1000;
-      eventSource.offsetTop = 0;
-      eventSource.offsetParent = { scrollTop: 0 }
-
-      sticky = wrapper.children().node;
-    })
-
-    it ('should not change sticky state when event source is not StickyContainer', () => {
-      sticky.placeholder.offsetTop = 0;
-      eventSource.scrollTop = 0;
-
-      sticky.handleContainerEvent({ distanceFromTop: 100, distanceFromBottom: 500, eventSource });
-      expect(sticky.state.isSticky).to.be.true;
-
-      sticky.handleContainerEvent({ distanceFromTop: 100, distanceFromBottom: 500, eventSource: document.body });
-      expect(sticky.state.isSticky).to.be.true;
-    });
-
-    it ('should change sticky state when event source is StickyContainer', () => {
-      sticky.placeholder.offsetTop = 1;
-      eventSource.scrollTop = 0;
-
-      sticky.handleContainerEvent({ distanceFromTop: 100, distanceFromBottom: 500, eventSource });
-      expect(sticky.state.isSticky).to.be.false;
-
-      eventSource.scrollTop = 1;
-      sticky.handleContainerEvent({ distanceFromTop: 100, distanceFromBottom: 500, eventSource });
-      expect(sticky.state.isSticky).to.be.true;
-
-      eventSource.scrollTop = 2;
-      sticky.handleContainerEvent({ distanceFromTop: 100, distanceFromBottom: 500, eventSource });
-      expect(sticky.state.isSticky).to.be.true;
-    });
-
-    it ('should adjust sticky style.top when StickyContainer has a negative distanceFromTop', () => {
-      sticky.placeholder.offsetTop = 0;
-      eventSource.scrollTop = 0;
-
-      sticky.handleContainerEvent({ distanceFromTop: 0, distanceFromBottom: 1000, eventSource });
-      expect(sticky.state.isSticky).to.be.true;
-      expect(sticky.state.style.top).to.equal(0)
-
-      eventSource.offsetParent.scrollTop = 1;
-      sticky.handleContainerEvent({ distanceFromTop: -1, distanceFromBottom: 999, eventSource: document.body });
-      expect(sticky.state.isSticky).to.be.true;
-      expect(sticky.state.style.top).to.equal(-1)
-
-      eventSource.scrollTop = 1;
-      sticky.handleContainerEvent({ distanceFromTop: -1, distanceFromBottom: 1000, eventSource });
-      expect(sticky.state.isSticky).to.be.true;
-      expect(sticky.state.style.top).to.equal(-1);
-
     });
   });
 

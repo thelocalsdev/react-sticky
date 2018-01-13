@@ -5,7 +5,6 @@ module.exports = {
   devtool: 'eval-source-map',
   entry: {
     basic: path.resolve('examples', 'basic', 'basic.js'),
-    relative: path.resolve('examples', 'relative', 'relative.js'),
     stacked: path.resolve('examples', 'stacked', 'stacked.js')
   },
   output: {

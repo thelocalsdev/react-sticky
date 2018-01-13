@@ -23,7 +23,15 @@ class Document extends PureComponent {
         <h2>Content before the Sticky...</h2>
         <div style={{ marginBottom: 200 }} />
         <StickyContainer style={{ height: 500, background: '#ddd', padding: '0 30px' }}>
-          <Sticky>
+          <Sticky bottomOffset={80}>
+            {
+              ({ isSticky, wasSticky, style, distanceFromTop, distanceFromBottom, calculatedHeight }) => {
+                console.log({ isSticky, wasSticky, style, distanceFromTop, distanceFromBottom, calculatedHeight });
+                return <Header style={style} />
+              }
+            }
+          </Sticky>
+          <Sticky position="bottom" topOffset={-80}>
             {
               ({ isSticky, wasSticky, style, distanceFromTop, distanceFromBottom, calculatedHeight }) => {
                 console.log({ isSticky, wasSticky, style, distanceFromTop, distanceFromBottom, calculatedHeight });

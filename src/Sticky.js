@@ -7,12 +7,12 @@ export default class Sticky extends Component {
   static propTypes = {
     topOffset: PropTypes.number,
     bottomOffset: PropTypes.number,
-    relative: PropTypes.bool,
+    position: PropTypes.oneOf(['top', 'bottom']),
     children: PropTypes.func.isRequired
   }
 
   static defaultProps = {
-    relative: false,
+    position: 'top',
     topOffset: 0,
     bottomOffset: 0,
     disableCompensation: false,
@@ -27,7 +27,6 @@ export default class Sticky extends Component {
 
   state = {
     isSticky: false,
-    wasSticky: false,
     style: { }
   }
 
@@ -48,29 +47,38 @@ export default class Sticky extends Component {
   handleContainerEvent = ({ distanceFromTop, distanceFromBottom, eventSource }) => {
     const parent = this.context.getParent();
 
-    let preventingStickyStateChanges = false;
-    if (this.props.relative) {
-        preventingStickyStateChanges = eventSource !== parent;
-        distanceFromTop = -(eventSource.scrollTop + eventSource.offsetTop) + this.placeholder.offsetTop
-    }
-
     const placeholderClientRect = this.placeholder.getBoundingClientRect();
     const contentClientRect = this.content.getBoundingClientRect();
     const calculatedHeight = contentClientRect.height;
 
-    const bottomDifference = distanceFromBottom - this.props.bottomOffset - calculatedHeight;
+    let isSticky = false;
 
-    const wasSticky = !!this.state.isSticky;
-    const isSticky = preventingStickyStateChanges ? wasSticky : (distanceFromTop <= -this.props.topOffset && distanceFromBottom > -this.props.bottomOffset);
+    const { position } = this.props;
+    let top = 0;
 
-    distanceFromBottom = (this.props.relative ? parent.scrollHeight - parent.scrollTop : distanceFromBottom) - calculatedHeight;
+    if (position === 'top') {
+      isSticky = distanceFromTop <= -this.props.topOffset && distanceFromBottom > -this.props.bottomOffset;
+
+      const bottomDifference = distanceFromBottom - this.props.bottomOffset - calculatedHeight;
+
+      distanceFromBottom = distanceFromBottom - calculatedHeight;
+
+      top = bottomDifference > 0 ? 0 : bottomDifference;
+    } else if (position === 'bottom') {
+      const viewportHeight = window.innerHeight;
+
+      isSticky = distanceFromTop - this.props.topOffset <= viewportHeight && distanceFromBottom - this.props.bottomOffset > 0;
+
+      top = Math.max(distanceFromTop - this.props.topOffset, viewportHeight - calculatedHeight);
+      top = distanceFromBottom < viewportHeight ? distanceFromBottom - this.props.bottomOffset - calculatedHeight : top;
+    }
 
     const style = !isSticky ? { } : {
       position: 'fixed',
-      top: bottomDifference > 0 ? (this.props.relative ? parent.offsetTop - parent.offsetParent.scrollTop : 0) : bottomDifference,
+      top: top,
       left: placeholderClientRect.left,
       width: placeholderClientRect.width
-    }
+    };
 
     if (!this.props.disableHardwareAcceleration) {
       style.transform = 'translateZ(0)';
@@ -78,7 +86,6 @@ export default class Sticky extends Component {
 
     this.setState({
       isSticky,
-      wasSticky,
       distanceFromTop,
       distanceFromBottom,
       calculatedHeight,
@@ -90,7 +97,6 @@ export default class Sticky extends Component {
     const element = React.cloneElement(
       this.props.children({
         isSticky: this.state.isSticky,
-        wasSticky: this.state.wasSticky,
         distanceFromTop: this.state.distanceFromTop,
         distanceFromBottom: this.state.distanceFromBottom,
         calculatedHeight: this.state.calculatedHeight,

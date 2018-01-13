@@ -6,11 +6,10 @@ Make your React components sticky!
 #### Update (7/2017): No longer actively maintained:
 The 6.0.1 release is the last release maintained by Captivation Software. This means we will not be considering any PR's and/or responding to any issues until a new maintainer is identified. It is *highly* recommended that you begin transitioning to another sticky library to ensure better support and sustainability. This is obviously less than ideal - sorry for any inconvenience!
 
-If you are interested in taking over ownership of react-sticky and are willing and able to invest the time the React community deserves, send a message to info@captivationsoftware.com. 
+If you are interested in taking over ownership of react-sticky and are willing and able to invest the time the React community deserves, send a message to info@captivationsoftware.com.
 
 #### Demos
   - [Basic](http://rawgit.com/captivationsoftware/react-sticky/master/examples/basic/index.html)
-  - [Relative](http://rawgit.com/captivationsoftware/react-sticky/master/examples/relative/index.html)
   - [Stacked](http://rawgit.com/captivationsoftware/react-sticky/master/examples/stacked/index.html)
 
 #### Version 6.x Highlights
@@ -34,7 +33,7 @@ npm install react-sticky
 
 The `Sticky`'s child function will be called when events occur in the parent `StickyContainer`,
 and will serve as the callback to apply your own logic and customizations, with sane `style` attributes
-to get you up and running quickly.  
+to get you up and running quickly.
 
 app.js
 ```js
@@ -81,17 +80,12 @@ When the "stickiness" becomes activated, the arguments to the sticky function
 are modified. Similarly, when deactivated, the arguments will update accordingly.
 
 ### `<StickyContainer />` Props
-`<StickyContainer />` supports all valid `<div />` props.  
+`<StickyContainer />` supports all valid `<div />` props.
 
 ### `<Sticky />` Props
 
-#### relative _(default: false)_
-Set `relative` to `true` if the `<Sticky />` element will be rendered within
-an overflowing `<StickyContainer />` (e.g. `style={{ overflowY: 'auto' }}`) and you want
-the `<Sticky />` behavior to react to events only within that container.
-
-When in `relative` mode, `window` events will not trigger sticky state changes. Only scrolling
-within the nearest `StickyContainer` can trigger sticky state changes.
+#### position _(default: 'top')_
+The accepted values are `top` and `bottom`. When `position` is set to `bottom`, your the `<Sticky />` element will be fixed to the bottom, else - to the top.
 
 #### topOffset _(default: 0)_
 Sticky state will be triggered when the top of the element is `topOffset` pixels from the top of the closest `<StickyContainer />`. Positive numbers give the impression of a lazy sticky state, whereas negative numbers are more eager in their attachment.
